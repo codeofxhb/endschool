@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ user.username }}
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+    <sapn>未登录，跳转到首页...</sapn>
+    <script type="text/javascript">
+        window.location.href = '/';
+    </script>
+{% endif %}
+<div class="container">
+    <div class="page-header" style="margin-top: 0">
+        <h1 style="font-size: 50px">{{ user.username }}</h1>
+    </div>
+    <div class="row">
+        <div id="infolist" class="col-md-8">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">昵称
+                        <a href="{% url 'change_niname' %}?from={{ request.get_full_path }}">
+                            修改
+                        </a>
+                    </label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static" style="font-style: inherit; font-size: 2em">
+                            {{ user.get_niname }}
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">邮箱
+                        <a href="{% url 'bind_email' %}?from={{ request.get_full_path }}">
+                            更改
+                        </a>
+                    </label>
+                    <div class="col-sm-10">
+                        <p class="form-control-static" style="font-style: inherit; font-size: 2em">{{ user.email }}</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">最近在线</label>
+                    <div class="col-sm-10">
+                            <p class="form-control-static" style="font-style: inherit; font-size: 2em">
+                                {{ user.last_login|date:"Y-m-d H:i:s" }}
+                            </p>
+                        </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputjoinedtime" class="col-sm-2 control-label">注册时间</label>
+                    <div class="col-sm-10">
+                            <p class="form-control-static" style="font-style: inherit; font-size: 2em">
+                                {{ user.date_joined|date:"Y-m-d H:i:s" }}
+                            </p>
+                        </div>
+                </div>
+            </form>
+        </div>
+        <div id="recommended" class="col-md-4">
+            <div class="hot_blogs" id="left">
+                <h3>今日推荐</h3>
+                <ul>
+                    {% for hot_blog in today_hot_blogs %}
+                        <li><a href="{% url 'blog_detail' hot_blog.object_id %}">{{ hot_blog.content_object.title|truncatechars:30 }}</a>  <<{{ hot_blog.read_num }}>></li>
+                    {% empty %}
+                        今日暂时没有热门推荐，快去随便看看吧！
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

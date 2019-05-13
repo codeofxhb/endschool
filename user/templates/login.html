@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    欢迎访问！！
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock %}
+
+{#{% block blog_index %}#}
+{#    active#}
+{#{% endblock %}#}
+
+{% block login %}
+<div class="container">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">登录</h3>
+            </div>
+            <div class="panel-body">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {% for field in login_form %}
+                        <p>
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <p class="text-danger">{{ field.errors.as_text }}</p>
+                        </p>
+                    {% endfor %}
+                    <span class="text-danger">{{ login_form.non_field_errors }}</span>
+                    <div class="clearfix"></div>
+                    <a href="{% url 'find_password' %}?from={{ request.get_full_path }}" class="pull-left">密码找回</a>
+                    <input type="submit" value="登录" class="btn btn-default pull-right" style="width: 160px;">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

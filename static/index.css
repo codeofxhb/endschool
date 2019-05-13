@@ -1,0 +1,23 @@
+h1  {
+    text-align: center;
+    margin-top: 4em;
+    margin-bottom: 2em;
+}
+
+#container {
+    margin: 0em auto;
+}
+
+div.row {
+    padding: 0px 30px 0px 30px;
+}
+
+div.hot_blogs {
+    float: left;
+    width: 370px;
+    padding: 0px 5px 0px 5px;
+}
+
+div.hot_blogs ul{
+    list-style: none;
+}

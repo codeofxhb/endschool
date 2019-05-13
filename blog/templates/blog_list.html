@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% load comment_tags %}
+{% load like_tags %}
+
+{% block title %}
+    我的博客
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'blog_list.css' %}">
+{% endblock %}
+
+{% block blog_list %}
+    active
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+            <h1>博文中心</h1>
+        <div class="row">
+{#  ================================================================博文列表==============================================================  #}
+            <div class="col-md-10 col-lg-10">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {% block block_type %}
+                            <h3>博文列表</h3>
+                        {% endblock %}
+                    </div>
+                    <div class="panel-body">
+                        <div class="blogs">
+                            <p>这里共有{{ blogs|length }}篇博文</p>
+                            {% for blog in blogs %}
+                                <p>
+                                    <a href="{% url 'blog_detail' blog.id %}">
+                                        <h3>{{ blog.title }}</h3>
+                                    </a>
+                                </p>
+                                <div class="container">
+                                    <div class="row">
+                                        <div style="float: left; padding-right: 4em;">
+                                            <span class="glyphicon glyphicon-th" aria-hidden="true"></span> 分类: <a href="{% url 'blog_type' blog.blogtype_id %}">{{ blog.blogtype }}</a>
+                                        </div>
+                                        <div style="float: left; padding-right: 4em;">
+                                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span> 发布时间:{{ blog.create_time }}
+                                        </div>
+                                        <div style="float: left; padding-right: 4em;">
+                                            <span class="glyphicon glyphicon-film" aria-hidden="true"></span> 阅读量: {{ blog.get_read_num }}
+                                        </div>
+                                        <div style="float: left; padding-right: 4em;">
+                                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> 评论数: {% get_comment_count blog %}
+                                        </div>
+                                        <div style="float: left; padding-right: 4em;">
+                                            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> 赞: {% get_like_counts blog %}
+                                        </div>
+                                    </div>
+                                </div>
+{#  -------------------------------striptags: 去除后台富文本编辑器中的html标签---------------------------------------------#}
+                                <p class="content">{{ blog.content|striptags|truncatechars:50 }}</p>
+                            {% empty %}
+                                <p>系统正在维护中...</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+{#  ================================================================博文列表==============================================================  #}
+
+            <div id="classification" class="col-md-2 col-lg-2">
+{#  =================================================================分类器===============================================================  #}
+                <div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>更多类型</h4>
+                        </div>
+                        <div class="panel-body">
+                            {% for blogtype in blogtypes %}
+                                <p>
+                                    <a href="{% url 'blog_type' blogtype.id %}">
+                                        {{ blogtype.typename }}(共有{{ blogtype.blog_count }}篇)
+                                    </a>
+                                </p>
+                            {% empty %}
+                                <p>暂时还没有分类哦</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+{#  =================================================================分类器===============================================================  #}
+
+{#  =================================================================时间归档=============================================================  #}
+                <div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>归档时间</h4>
+                        </div>
+                        <div class="panel-body">
+                            {% for date, blog_time_count in blog_time_counts.items %}
+                                <p>
+                                    <a href="{% url 'blog_times' date.year date.month date.day %}">
+                                        {{ date|date:"Y年m月d日" }}(共有{{ blog_time_count }}篇)
+                                    </a>
+                                </p>
+                            {% empty %}
+                                <p>暂时还没有分类哦</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+{#  =================================================================时间归档=============================================================  #}
+            </div>
+        </div>
+
+
+
+
+
+{#  =================================================================分页器===============================================================  #}
+        <div class="paginator">
+            <nav aria-label="Page navigation" class="paginator">
+                <ul class="pagination">
+                    {% if blogs.has_previous %}
+                        <li>
+                            <a href="?page_num={{ blogs.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled">
+                            <a href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for page in page_range %}
+                        {% if page == blogs.number %}
+                            <li class="active"><span>{{ page }}</span></li>
+                        {% else %}
+                            {% if page == '...' %}
+                                <li><span>{{ page }}</span></li>
+                            {% else %}
+                                <li><a href="?page_num={{ page }}">{{ page }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor  %}
+
+                    {% if blogs.has_next %}
+                        <li>
+                            <a href="?page_num={{ blogs.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="disabled">
+                            <a href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+{#  =================================================================分页器===============================================================  #}
+    </div>
+{% endblock %}

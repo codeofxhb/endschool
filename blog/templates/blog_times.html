@@ -1,0 +1,10 @@
+{% extends 'blog_list.html' %}
+
+{% block title %}
+    {{ blog_year }}年{{ blog_month }}月{{ blog_day }}日
+{% endblock %}
+
+{% block block_type %}
+    {{ blog_year }}年{{ blog_month }}月{{ blog_day }}日
+    <a href="{% url 'blog_list' %}" style="margin-left: 20px">查看全部博文</a>
+{% endblock %}

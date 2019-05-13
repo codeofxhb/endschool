@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    用户注册！！
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">注册</h3>
+            </div>
+            <div class="panel-body">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {% for field in reg_form %}
+                        <p>
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <p class="text-danger">{{ field.errors.as_text }}</p>
+                        </p>
+                    {% endfor %}
+                    <span class="pull-left text-danger">{{ reg_form.non_field_errors }}</span>
+                    <div class="clearfix"></div>
+                    <div class="pull-left">
+                        <button id="send_code" class="btn">
+                            点击发送验证码
+                        </button>
+                    </div>
+                    <input type="submit" value="注册" class="btn btn-default pull-right" style="width: 160px;">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scipt_extends %}
+    <script type="text/javascript">
+        $("#send_code").click(function () {
+            $("#tip").text("");
+            var email = $("#id_email").val();
+            if (email==''){
+                $("#tip").text("* 请先输入正确的邮箱");
+            }
+            $.ajax({
+                url: "{% url 'send_verification_mail' %}",
+                type: "GET",
+                data: {
+                    'email': email,
+                    'send_code_for': 'register_account_code'
+                },
+                cache: false,
+                success: function (data) {
+                    if (data['status'] == 'ERROR') {
+                        alert(data['status']);
+                    }
+                }
+            });
+            $(this).addClass("disabled");
+            $(this).attr("disabled", true);
+            var time = 30;
+            $(this).text(time + 's');
+            var interval = setInterval(() => {
+                if(time <= 0){
+                    clearInterval(interval);
+                    $(this).removeClass("disabled");
+                    $(this).attr("disabled", false);
+                    $(this).text("点击发送验证码");
+                    return false;
+                }
+                time --;
+                $(this).text(time + 's');
+            }, 1000)
+        });
+    </script>
+{% endblock %}
